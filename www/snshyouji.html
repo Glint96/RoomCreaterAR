@@ -1,0 +1,76 @@
+<ons-page>
+    <script>
+       // sessionStorage に保存したデータを取得する
+        var object = sessionStorage.getItem('sns_hyouji');
+        //console.log(data);
+        var data = JSON.parse(object);
+
+        //変数名にDateを使うと盛大にバグる（onsenuiか何かにdate関数が設定されているっぽい？）
+        var userName  = data.userName;
+        var creDate   = data.createDate;
+        var text      = data.text;
+        
+        document.getElementById("hyo_name").innerHTML = userName;
+        document.getElementById("hyo_date").innerHTML = creDate;
+        document.getElementById("hyo_text").innerHTML = text;
+
+        //選択された投稿の画像を取得
+        var dataUrl = document.getElementById("ind_img"+sns_post).src;
+        document.getElementById("hyo_img").src = dataUrl;
+  </script>
+<ons-toolbar>
+      <div class="left">
+        <ons-back-button></ons-back-button>
+      </div>
+      <div class="center"></div>
+      <div class="right"></div>
+    </ons-toolbar>
+
+    <div>
+    <ons-card class="post">
+        <ons-list-item>
+              <div class="left" onclick="fn.pushPage('demotarou.html')">
+                  <img class="list-item__thumbnail" src="photo/sofa.png" >
+                </div>
+                <div class="center">
+                  <div class="list-item__title"><b id="hyo_name"></b></div>
+                  <div class="post-time" id="hyo_date"></div>
+              </div>
+              <div class="right">
+                <span class="corner-button" modifier="quiet" onclick="showPopover(this)">
+                  <ons-icon icon="md-more-vert"></ons-icon>
+                </span>
+              </div>
+            </ons-list-item>
+
+      <div style="text-align: center; position: relative;" ondblclick="like(1)">
+        <img class="post-image" id="hyo_img" src="">
+      </div>
+
+      <ons-list-item class="post-button-bar" modifier="nodivider">
+        <div class="center" style="padding-top: 0px">
+        </div>
+        <div class="right corner-button bookmark">
+          <ons-button class="post-button" modifier="quiet" onclick="like(1)">
+            <ons-icon icon="md-favorite-outline" id="button-post-like-1" >
+             </ons-icon>
+          </ons-button>
+        </div>
+      </ons-list-item>
+
+      <div class="post-like-info"><b></b> </div>
+      <div class="post-caption" id="hyo_text"></div> 
+    </ons-card>
+    </div>
+    <br>
+    <div id="comment">
+      <ons-list-header>
+        コメント
+      </ons-list-header>
+      <ons-list>
+        <ons-list-item>
+          あばば
+        </ons-list-item>
+      </ons-list>
+    </div>
+</ons-page>

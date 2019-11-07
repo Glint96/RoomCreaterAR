@@ -1,0 +1,108 @@
+<ons-page class="main_pages"  id="profile-page">
+  <script>
+   
+
+    //ページ読込時に実行
+    document.addEventListener('init',function(e){
+      if(e.target.matches('#profile-page')){
+          currentUser = ncmb.User.getCurrentUser();
+          currentUserName = currentUser.get("userName");
+          //index.htmlとmypage.htmlのアカウント名を使用ユーザに書き換え
+          document.getElementById("my_acount_name").innerHTML = currentUserName;
+          mysnsCount();
+          }   
+    });
+
+    function mysnsCount(){
+        //投稿数取得
+        SNSData
+        .equalTo("userName",currentUser.get("userName"))
+        .count()
+        .fetchAll()
+        .then(function(res){ 
+          var post = res.count;
+          document.getElementById("my_acount_post").innerHTML = post;
+          var snsList = document.getElementById('my_sns-list');
+          snsMake(res,snsList,"mysns");
+        },function(err){
+          console.log(err);
+        });
+    }
+
+    function deleteSNS(){
+      var objectId = document.getElementById("my_obj"+sns_num).innerHTML;
+      //投稿数取得
+      SNSData
+      .equalTo("objectId",objectId)
+      .fetchAll()
+      .then(function(res){
+        console.log(res[0]);
+        res[0].delete()
+        alert("投稿を削除しました");
+        mysnsCount();
+      },function(err){
+        alert(err);
+      });
+    }
+  </script>
+
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button></ons-back-button>
+      </div>
+      <div class="center">マイページ</div>
+      <div class="right">
+        <ons-toolbar-button><ons-icon icon="ion-gear-a"></ons-icon></ons-toolbar-button>
+      </div>
+    </ons-toolbar>
+
+    <div class="content" style="background-color: white !important">
+
+      <div style="padding: 14px 6px 14px 16px; border-bottom:1px solid rgba(187, 187, 187, 0.51)">
+        <div class="profile_wrapper">
+          <div class="profile_image_wrapper">
+            <ons-icon size="24px" icon="ion-ios-plus"></ons-icon>
+            <img src="photo/sofa.png">
+          </div>
+          <div class="profile_info_wrapper">
+            <!--名前-->
+            <div><p class="profile_extra_wrapper" id="my_acount_name"></p></div>
+            <div class="profile_info_numbers">
+              <!--投稿数-->
+              <div style="margin-top:30px">
+                <div id="my_acount_post"></div>
+                <div class="profile_info_text">Posts</div>
+              </div>
+              <div>
+                <div></div>
+                <div class="profile_info_text"></div>
+              </div>
+              <div>
+                <div></div>
+                <div class="profile_info_text"></div>
+              </div>
+            </div>
+           
+          </div>
+        </div>
+      </div>
+    
+    <!--投稿を表示-->
+      <div id="list_view">
+        <ons-list>
+           <ons-lazy-repeat id="my_sns-list"></ons-lazy-repeat>
+        </ons-list>
+    </div>
+  </ons-page>
+
+    <!--マイページのポップアップメニューの中身-->
+    <ons-popover cancelable mask-color="rgba(0,0,0,0)" style="margin-top:-50px" direction="down" id="popover">
+      <ons-list>
+        <ons-list-item>
+          編集
+        </ons-list-item>
+        <ons-list-item onclick="deleteSNS()">
+          削除
+        </ons-list-item>
+      </ons-list>
+    </ons-popover>

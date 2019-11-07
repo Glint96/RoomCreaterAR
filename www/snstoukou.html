@@ -1,0 +1,140 @@
+<ons-page id="dialogs-page">
+  <script>
+    //端末の準備ができたら呼び出し
+    document.addEventListener("deviceready", snsReady, false);
+    function snsReady(){
+      //フォームの要素を取得
+      var button = document.getElementById("button");
+      var form = document.getElementById("form");
+      var textarea = document.getElementById("textarea");
+      //文字数制限
+      //getAttributeメソッドで属性を取得可能
+      var maxTextNum = textarea.getAttribute("maxlength");
+      //テキストエリアで要素をタイプした時。
+      //残り文字数を表示する要素の追加
+      textarea.addEventListener("keyup", function() {
+        var currentTextNum = textarea.value.length;
+        //マイナスにならないよう
+        var count = maxTextNum - currentTextNum;
+        if(count < 0){
+          count = 0;
+        }
+        document.getElementById("moji_cnt").innerHTML = count + "/150";
+      });
+
+      //ファイルの読み込み
+      var reader = new FileReader();
+        reader.onload = function(e) {
+          var dataUrl = reader.result;
+        }
+
+      //ファイルを選択したら実行
+      var photo = document.getElementById("sns_photo");
+      photo.addEventListener('change',function(e) {
+        e.preventDefault();
+        var file = e.target.files[0];
+        reader.onload = function(e) {
+          //プレビュー
+          var img = document.getElementById("sns_img");
+          img.src = e.target.result;
+          document.getElementById("sns_img").style.display = "block";
+        }
+        reader.readAsDataURL(file);
+      }, false);
+
+      //投稿処理
+      var submit = document.getElementById("toukou");
+      submit.addEventListener("click", function(e) {
+        e.preventDefault();
+        
+        //ons.notification.alert("ログイン中のユーザー: " + currentUser.get("userName"));
+          
+        //ニフクラのsnsData取得
+        var snsData = new SNSData();
+          
+        var name_f = true;//ファイル選択済みかの識別用フラグ
+
+        //ファイル名、ファイルデータを取得
+        if(document.getElementById("sns_photo").files[0] === undefined){
+          ons.notification.alert("画像を選択してください");
+          name_f = false;
+        }else{
+           // 生成する文字列の長さ
+          var l = 8;
+
+          // 生成する文字列に含める文字セット
+          var c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+          var cl = c.length;
+          var code = "";
+          for(var i=0; i<l; i++){
+            code += c[Math.floor(Math.random()*cl)];
+          }
+          //ファイルの名前そのままで管理すると重複してSNS画面にて違うデータを表示する可能性有り
+          //ランダムな文字列とファイル名で重複する確率を下げる
+          var fileName = code + document.getElementById("sns_photo").files[0].name;
+        }
+        var fileData = document.getElementById("sns_photo").files[0];
+        document.getElementById("sns")
+
+        //console.log(fileName);
+        //console.log(fileData);
+
+        currentUser = ncmb.User.getCurrentUser();
+
+        if(name_f){
+          //テキストデータアップロード
+          snsData.set("text",textarea.value)
+                .set("userName", currentUser.get("userName"))
+                .set("picture",fileName)
+                .save()
+                .then(function(res){
+                  ons.notification.alert("投稿しました");
+                })
+                .catch(function(err){
+                   ons.notification.alert(err+"1");
+                });
+          
+          //画像ファイルアップロード
+          ncmb.File.upload(fileName, fileData)
+                .then(function(res){
+                  ons.notification.alert(res+"1");
+                })
+                .catch(function(err){
+                  ons.notification.alert(err+"2");
+                });
+        }
+      },false);
+    }
+
+    //ページを閉じるときに実行
+    document.addEventListener("hide",function(){
+      acount();
+    });
+  </script>
+
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button></ons-back-button>
+    </div>
+    <div class="center">SNS投稿</div>
+    <div class="right"></div>
+  </ons-toolbar>
+
+  <!--フォーム-->
+  <div id="form-main">
+    <form action="" id="form">
+	    <textarea id="textarea" name="textarea" cols="15" rows="10" maxlength="150" placeholder="文字を入力してください"></textarea>
+      <div id="moji_cnt">150/150</div>
+      <!--プレビュー画像サイズ調整まだ-->
+      <img id="sns_img">
+    </form>
+    <div id="button">
+      <label for="sns_photo" class="file-btn">
+        写真選択
+        <input type="file" id="sns_photo" accept="image/*">
+      </label><br><br>
+      <ons-input type="submit" id="toukou" value="投稿"></ons-input>
+    </div>
+  </div>
+</ons-page>

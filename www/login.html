@@ -1,0 +1,55 @@
+<ons-page id="loginPage">
+  <script>
+    //ログインページ表示時に毎回ページの初期化をしたい　未完成
+    /*document.addEventListener('show', function(event) {
+    if(event.target.matches('#loginPage')) {
+      document.getElementById("appNavigator").replacePage('login.html');
+    }
+  }, false);*/
+
+    //パスワード照会用
+    var login = function() {
+      var username = document.getElementById('log_username').value;
+      var password = document.getElementById('log_password').value;
+
+    //ログイン処理
+    ncmb.User.login(username, password)
+        .then(function(data){
+          document.getElementById("appNavigator").popPage();
+          ons.notification.alert("ログインしました");
+           // カレントユーザー情報の取得
+          currentUser = ncmb.User.getCurrentUser();
+          //index.htmlのサイドメニューの文字切り替え
+          document.getElementById("login_button").innerHTML = "ログアウト";
+          login_f = true;
+          acount();
+        })
+        .catch(function(err){
+          ons.notification.alert('パスワードかユーザー名が間違っています');
+        });
+    };
+  </script>
+   <ons-toolbar>
+      <div class="left">
+        <ons-back-button></ons-back-button>
+      </div>
+      <div class="center">ログイン</div>
+      <div class="right"></div>
+    </ons-toolbar>
+
+  <div style="text-align: center; margin-top: 80px;">
+    <p>
+      <ons-input id="log_username" modifier="underbar" placeholder="ユーザーネーム" float></ons-input>
+    </p>
+    <p>
+      <ons-input id="log_password" modifier="underbar" type="password" placeholder="パスワード" float></ons-input>
+    </p>
+    <p style="margin-top: 30px;">
+      <ons-button onclick="login()">ログイン</ons-button>
+    </p>
+
+    <p style="color:blue;text-decoration: underline; margin-top: 80px;" onclick="fn.pushPage('registry.html')">
+      会員登録がまだの方はこちらから
+    </p>
+  </div>
+</ons-page>

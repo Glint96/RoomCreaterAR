@@ -1,0 +1,24 @@
+/*未使用*/
+
+.title{
+    height: 160px;
+    width: 170px;
+    margin:30% auto;
+    border-style: double;
+}
+
+h1,#circle1,#circle2,#circle3{
+    position: absolute;
+    height: 160px;
+    width: 170px;
+    margin:auto;
+}
+
+h1{
+    color: white;
+    font-size: 24px;
+}
+
+.circle1{
+
+}

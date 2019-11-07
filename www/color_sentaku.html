@@ -1,0 +1,111 @@
+<ons-page>
+    <script>
+       function back(){
+         location.href = "index.html";
+       }
+
+       function goAR(){
+        //location.href = "ar.html";
+        //↑が動くようになったら↓は消す
+        location.href = "subAr.html";
+       }
+
+        var colorlist = [
+          {
+            code:"#FF0000",
+            photo: "photo/inugoyared.png"
+          },
+          {
+            code:"#0000FF",
+            photo: "photo/inugoyablue.png"
+          },
+          {
+            code:"#00FF00",
+            photo: "photo/inugoyared.png"
+          },
+          {
+            code:"#FFFF00",
+            photo: "photo/inugoyared.png"
+          },
+          {
+            code:"#FFFFFF",
+            photo: "photo/inugoyared.png"
+          },
+          {
+            code:"#000000",
+            photo: "photo/inugoyared.png"
+          },
+          {
+            code:"#FF00FF",
+            photo: "photo/inugoyared.png"
+          },
+          {
+            code:"#808000",
+            photo: "photo/inugoyared.png"
+          }
+          ];
+        
+        var photolist = [
+         ,"photo/inugoyablue.png","photo/inugoyared.png","photo/inugoyared.png","photo/inugoyared.png","photo/inugoyared.png","photo/inugoyared.png","photo/inugoyared.png",
+        ];
+
+       ons.ready(function colorseisei(){
+           for(var i = 0; i<colorlist.length; i++){
+                let op = document.createElement("button");
+                op.id = "colorinput"+i
+                op.value = i;
+                document.getElementById("list").appendChild(op);    
+                document.getElementById("colorinput"+i).classList.add("colorinput");
+                document.getElementById("colorinput"+i).style.backgroundColor= colorlist[i].code;
+                op.onclick = function(){
+                                document.getElementById("kagu_image").src = colorlist[op.value].photo;
+                              }
+              }
+       });
+
+        ons.getScriptPage().onInit = function () {
+          document.getElementById('range-slider').addEventListener('input', function (event) {
+          document.getElementById('volume-value').innerHTML = `&nbsp;${event.target.value}`;
+          /*if (event.target.value > 80) {
+            document.getElementById('careful-message').style.display = 'inline-block';
+          } else {
+            document.getElementById('careful-message').style.display = 'none';
+          }*/
+          document.getElementById("kagu_image").width = `&nbsp;${event.target.value}`;
+        })
+      }
+    </script>
+    <ons-toolbar>
+        <div class="left">
+          <ons-back-button>Home</ons-back-button>
+        </div>
+        <div class="center">ペット用家具</div>
+        <div class="right"></div>
+    </ons-toolbar>
+
+  
+   <img id="kagu_image" src="photo/inugoyared.png">
+    <h1>color</h1>
+   <div class="list" id="list"></div>
+  <!--色選択のinput-->
+  <!--<input type="color">-->
+
+     <ons-list-item>
+        サイズ調整:
+        <ons-row>
+          <ons-col width="40px" style="text-align: center; line-height: 31px;">
+            <ons-icon icon="md-zoom-out"></ons-icon>
+          </ons-col>
+          <ons-col>
+            <ons-range id="range-slider" value="25" style="width: 100%;"></ons-range>
+          </ons-col>
+          <ons-col width="40px" style="text-align: center; line-height: 31px;">
+            <ons-icon icon="md-zoom-in"></ons-icon>
+          </ons-col>
+        </ons-row>
+        Size:<span id="volume-value">&nbsp;25</span> <span id="careful-message" style="display: none">&nbsp;(careful, that's loud)</span>
+      </ons-list-item>
+    </ons-list>
+    
+   <ons-button id="kettei" style="margin-left:25vw" onclick="goAR()">決定</ons-button>
+</ons-page>

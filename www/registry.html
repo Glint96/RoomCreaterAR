@@ -1,0 +1,67 @@
+<ons-page>
+  <script>
+
+    //入力確認
+    //#usernameと#passwordはlogin.htmlで使用している
+    //このページで使用するとvalueが取得できなくなるため
+    //特定のページのidの取得の仕方がわかるまで別のidを入れる
+    var pass = function() {
+      var mail = document.getElementById("mail").value;
+      var name = document.getElementById("reg_username").value;
+      var password1 = document.getElementById('reg_password').value;
+      var password2 = document.getElementById('repassword').value;
+
+      console.log(mail);
+      console.log(name);
+      console.log(password1);
+      console.log(password2);
+
+    if (password1 != password2) {
+        ons.notification.alert('パスワードが間違っています');
+      }else if(password1== ""||password2== ""||mail == ""||name == ""){
+        ons.notification.alert("入力されれていない欄があります");
+      }else{
+          //　Userインスタンスの生成
+          var user = new ncmb.User();
+          // ユーザー名・パスワードを設定
+          user.set("userName", name) /* ユーザー名 */
+              .set("password", password1) /* パスワード */
+              .set("mailAddress", mail); /* メールアドレス */
+          // ユーザーの新規登録処理
+          user.signUpByAccount()
+              .then(function(){
+                  fn.pushPage('mailsoushin.html');
+              })
+              .catch(function(err){
+                ons.notification.alert("登録に失敗しました");
+              });
+        }
+    };    
+  </script>
+  
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button></ons-back-button>
+      </div>
+      <div class="center">会員登録</div>
+      <div class="right"></div>
+    </ons-toolbar>
+
+     <div style="text-align: center; margin-top: 80px;">
+    <p>
+      <ons-input id="mail" modifier="underbar" type="email" placeholder="メールアドレス" float></ons-input>
+    </p>
+    <p style="margin-top: 30px;">
+      <ons-input id="reg_username" modifier="underbar" placeholder="ユーザーネーム" float></ons-input>
+    </p>
+    <p style="margin-top: 30px;">
+       <ons-input id="reg_password" modifier="underbar" type="password" placeholder="パスワード" float></ons-input>
+    </p>
+     <p>
+      <ons-input id="repassword" modifier="underbar" type="password" placeholder="パスワード再入力" float></ons-input>
+    </p>
+    <p style="margin-top: 30px;">
+      <ons-button onclick="pass()">登録</ons-button>
+    </p>
+     </div>
+  </ons-page>

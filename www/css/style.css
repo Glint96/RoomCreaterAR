@@ -1,0 +1,102 @@
+/*.pace-running .wrap {
+    display:none;
+}
+*/
+.list{
+    top: 0;
+    width: 100%;
+}
+#type{
+     display:block;
+     height:80px; 
+     width:100%;
+     border-style:solid;
+     border-width: 2px;
+     border-radius: 20px;
+     font-size: 32px;
+     margin-bottom: 10px;
+     background-color: white;
+}
+#type:active{
+    border-style:inset;   
+}
+.right{
+  margin-right:10px;
+}
+/*中身*/
+#list-content {
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;/*最前面に*/
+  width: 100%;
+  max-width: 330px;/*最大幅（調整してください）*/
+  height: 100%;
+  background: #fff;/*背景色*/
+  transition: .3s ease-in-out;/*滑らかに表示*/
+  -webkit-transform: translateX(105%);
+  transform: translateX(105%);/*右に隠しておく*/
+}
+#type:active + .list-content {
+  -webkit-transform: translateX(0%);
+  transform: translateX(0%);/*中身を表示（左へスライド）*/
+  box-shadow: 6px 0 25px rgba(0,0,0,.15);
+}
+.itiran{
+    width:98%;
+    margin-top: 10px;
+    border-style:double; 
+    border-width:3px;
+}
+.room_title{
+    border-top-style: solid;
+    width: 100%;
+}
+#kagu_image{
+  width: 80%;
+  margin-top:5vh;
+  margin-left: 10vw;
+  border-style:solid;
+}
+.colorinput{
+  margin-top: 2px;
+  margin-left: 8px;
+  width: 21vw;
+  height: 21vw;
+}
+#kettei{
+  width: 160px;
+  height: 40px;
+  margin: 20px auto;
+  padding-top: 12px;
+  text-align: center;
+  font-size: 24px; 
+  border-style: solid;
+  color: white;
+  background-color: red;
+}
+.profile-pic {
+  width: 200px;
+  background-color: #fff;
+  margin: 20px auto 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.profile-pic > img {
+  display: block;
+  max-width: 100%;
+}
+
+ons-list-item {
+  color: #444;
+}
+ons-card{
+  height: 100%;
+  font-size: 28px;
+}
+
+.obj_post{
+  display: none;
+}

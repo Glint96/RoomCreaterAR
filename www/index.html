@@ -1,0 +1,498 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/sns.js"></script>
+    <script src="js/picture.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/snstoukou.css">
+    <link rel="stylesheet" href="css/snsitiran.css">
+    <link rel="stylesheet" href="css/mypage.css">
+</head>
+
+<body>
+  <!--タブとハンバーガーメニュー呼び出し-->
+<ons-navigator id="appNavigator" page="appMainmenu.html" swipeable swipe-target-width="80px">
+  <template id="appMainmenu.html">
+  <ons-page>
+    <ons-splitter id="appSplitter">
+      <ons-splitter-side id="sidemenu" page="sidemenu.html" side="left" collapse="" width="260px"></ons-splitter-side>
+      <ons-splitter-content page="tabbar.html"></ons-splitter-content>
+    </ons-splitter>
+  </ons-page>
+  </template>
+</ons-navigator>
+
+
+<!--タブ-->
+<template id="tabbar.html">
+  <ons-page id="tabbar-page">
+    <ons-toolbar>
+      <div class="left">
+        <ons-toolbar-button onclick="fn.toggleMenu()">
+          <ons-icon icon="ion-navicon, material:md-menu"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">ルムクリッ！-Room Creater-</div>
+    </ons-toolbar>
+
+    <!--タブの種類-->
+    <ons-tabbar swipeable id="appTabbar" position="auto">
+      <ons-tab label="家具選択" icon="ion-home" page="home.html" active></ons-tab>
+      <ons-tab label="SNS一覧" icon="ion-edit" page="sns.html"></ons-tab>
+    </ons-tabbar>
+  </ons-page>
+</template>
+
+<!--ハンバーガーメニュー-->
+<template id="sidemenu.html">
+  <ons-page>
+    <div class="profile-pic" onclick="fn.pushPage('developer.html')">
+      <!--ここに可能ならオリジナルロゴか何かを入れる-->
+      <!--又は簡易プロフィールか何か-->
+      <img src="https://monaca.io/img/logos/download_image_onsenui_01.png">
+    </div>
+
+    <!--アカウント表示-->
+    <div height="80px">
+      <ons-list-item>
+        <div class="left" style="margin-left:10px">
+            <img class="list-item__thumbnail" src="photo/sofa.png" >
+          </div>
+          <div class="center" style="text-align:center">
+            <div class="list-item__title"><b id="ind_acount_name"></b></div>
+            <div class="profile_info_text" id="ind_acount_post" style="font-size:16px;margin-left:40%;margin-top:5px"></div>
+          </div>
+      </ons-list-item>
+    </div>
+    
+    <ons-list-title>メニュー</ons-list-title>
+    <ons-list>
+      <ons-list-item onclick="gosns()">
+      <div class="left">
+          <ons-icon fixed-width class="list-item__icon" icon="ion-edit, material:md-edit"></ons-icon>
+        </div>
+        <div class="center">
+          SNS投稿
+        </div>
+        <div class="right">
+          <ons-icon icon="fa-external-link"></ons-icon>
+        </div>    
+      </ons-list-item>
+       <ons-list-item onclick="gomypage()">
+      <div class="left">
+          <ons-icon fixed-width class="list-item__icon" icon="ion-edit, material:md-edit"></ons-icon>
+        </div>
+        <div class="center">
+          マイページ
+        </div>
+        <div class="right">
+          <ons-icon icon="fa-external-link"></ons-icon>
+        </div>    
+      </ons-list-item>
+    </ons-list>
+
+    <br><br>
+
+     <ons-list>
+      <ons-list-item onclick="gologin()">
+         <div class="left">
+            <ons-icon fixed-width class="list-item__icon" icon="ion-edit, material:md-edit"></ons-icon>
+          </div>
+          <div class="center" id="login_button">
+            ログイン
+          </div>
+          <div class="right">
+            <ons-icon icon="fa-external-link"></ons-icon>
+          </div>    
+      </ons-list-item>
+    </ons-list>
+
+    <script>
+      ons.getScriptPage().onInit = function() {
+        // Set ons-splitter-side animation
+        this.parentElement.setAttribute('animation', ons.platform.isAndroid() ? 'overlay' : 'reveal');
+      };
+
+      var login_f = false;
+
+      var gosns = function(){
+        if(login_f){
+          fn.pushPage('snstoukou.html');
+        }else{
+          fn.pushPage('login.html');
+        }
+      }
+
+      var gomypage = function(){
+        if(login_f){
+          fn.pushPage('mypage.html');
+        }else{
+          fn.pushPage('login.html');
+        }
+      }
+
+       var gologin = function(){
+        if(login_f){
+          //ログアウト処理
+            ncmb.User.logout();
+            login_f = false;
+            document.getElementById("login_button").innerHTML = "ログイン";
+            ons.notification.alert('ログアウトしました');
+            document.getElementById("ind_acount_name").innerHTML = "";
+            document.getElementById("ind_acount_post").innerHTML = "";
+        }else{
+          fn.pushPage('login.html');
+        }
+      }
+    </script>
+  </ons-page>
+</template>
+
+     <!----------------家具配置---------------------------->
+    <template id="home.html">
+      <ons-page>
+        <!--<div class="list" id="list"></div>-->
+        <ons-list>
+          <ons-card>
+          <ons-list-item onclick="fn.pushPage('petData.html')">
+            <div class="left">
+              <ons-icon icon="fa-paw"></ons-icon>
+            </div>
+            <div class="center">
+               ペット用家具
+            </div>
+          </ons-list-item>
+          </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('tableData.html')">
+              <div class="left">
+                <ons-icon icon="fa-table"class="left"></ons-icon>
+              </div>
+              <div class="center">
+                テーブル
+              </div>
+            </ons-list-item>
+          </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('sofaData.html')">
+               <div class="left">
+            <ons-icon icon="fa-couch"class="left"></ons-icon>
+             </div>
+            <div class="center">
+               ソファー
+                </div>
+            </ons-list-item>
+            </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('chairData.html')">
+               <div class="left">
+            <ons-icon icon="fa-chair"class="left"></ons-icon>
+             </div>
+            <div class="center">
+               椅子 
+               </div>
+            </ons-list-item>
+            </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('shelfData.html')">
+               <div class="left">
+            <ons-icon icon="fa-align-justify"></ion-icon>
+             </div>
+            <div class="center">
+              棚
+               </div>
+            </ons-list-item>
+            </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('deskData.html')"> 
+               <div class="left"><ons-icon icon="fa-desktop"class="left"></ons-icon>
+                </div>
+            <div class="center">
+              机
+               </div>
+            </ons-list-item>
+            </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('lightData.html')"> 
+               <div class="left"><ons-icon icon="fa-lightbulb"class="left"></ons-icon>
+                </div>
+            <div class="center">
+               照明
+                </div>
+            </ons-list-item>
+            </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('gootsData.html')"> 
+               <div class="left"><ons-icon icon="fa-archive"class="left"></ons-icon>
+                </div>
+            <div class="center">
+               雑貨
+                </div>
+            </ons-list-item>
+            </ons-card>
+          <ons-card>
+            <ons-list-item onclick="fn.pushPage('curtData.html')"> 
+               <div class="left"><ons-icon icon="fa-map"class="left"></ons-icon>
+                </div>
+            <div class="center">
+              カーテン
+               </div>
+            </ons-list-item>
+            </ons-card>
+        </ons-list>
+      </ons-page>
+    </template>
+
+    <!---------------------SNS機能------------------------->
+    <template id="sns.html">
+      <ons-page id="snsitiran">
+          <ons-pull-hook id="pull-hook">
+            Pull to refresh
+          </ons-pull-hook>
+
+           <ons-list>
+            <ons-lazy-repeat id="ind_sns-list"></ons-lazy-repeat>
+          </ons-list>
+
+      <script>
+      //SNS一覧表示画面の更新処理（sns.html内部に書かないと動作不安定）
+       ons.ready(function(){
+          var pullHook = document.getElementById('pull-hook');
+
+          pullHook.addEventListener('changestate', function(event) {
+            var message = '';
+
+            switch (event.state) {
+              case 'initial':
+                message = 'Pull to refresh';
+                break;
+              case 'preaction':
+                message = 'Release';
+                break;
+              case 'action':
+                snsCount();
+                message = 'Loading...';
+                break;
+            }
+
+            pullHook.innerHTML = message;
+          });
+
+          pullHook.onAction = function(done) {
+            setTimeout(done, 2000);
+          };
+        });
+      </script>
+      </ons-page>
+    </template>
+
+    <!--SNS一覧のポップアップメニューの中身-->
+     <ons-popover cancelable mask-color="rgba(0,0,0,0)" direction="down" id="popover">
+      <ons-list>
+         <ons-list-item>
+            この投稿を非表示にする
+         </ons-list-item>
+          <ons-list-item>
+            報告
+          </ons-list-item>
+      </ons-list>
+    </ons-popover>
+    
+  <!--ペット家具-->
+  <template id="petData.html">
+     <ons-page id="petData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">ペット用家具</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット小屋</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット椅子</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット用トイレ</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット用皿</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">キャットタワー</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--テーブル-->
+   <template id="tableData.html">
+     <ons-page id="tableData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">テーブル</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル1</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル2</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル3</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル4</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--ソファー-->
+   <template id="sofaData.html">
+     <ons-page id="sofaData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">ソファー</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー1</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー2</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー3</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー4</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー5</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--椅子-->
+   <template id="chairData.html">
+     <ons-page id="chairData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">椅子</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子1</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子2</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子3</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子4</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子5</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子6</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--棚-->
+   <template id="shelfData.html">
+     <ons-page id="shelfData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">棚</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">棚1</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">棚2</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--机-->
+   <template id="deskData.html">
+     <ons-page id="deskData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">机</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">机1</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">机2</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">机3</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">机4</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--照明-->
+   <template id="lightData.html">
+     <ons-page id="lightData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">照明</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">照明1</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--雑貨-->
+   <template id="gootsData.html">
+     <ons-page id="gootsData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">雑貨</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨1</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨2</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨3</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨4</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨5</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨6</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨7</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨8</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨9</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨10</ons-card>
+          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨11</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  <!--カーテン-->
+   <template id="curtData.html">
+     <ons-page id="curtData-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-back-button>Home</ons-back-button>
+          </div>
+          <div class="center">カーテン</div>
+          <div class="right"></div>
+        </ons-toolbar>
+
+        <ons-list>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン1</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン2</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン3</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン4</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン5</ons-card>
+         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン6</ons-card>
+        </ons-list>
+      </ons-page>
+  </template>
+
+  </ons-page>
+</template>
+</body>
+</html>
