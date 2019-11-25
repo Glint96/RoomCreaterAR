@@ -10,6 +10,7 @@
     //パスワード照会用
     var login = function() {
       var username = document.getElementById('log_username').value;
+      // var userid = document.getElementById('log_userId').value;
       var password = document.getElementById('log_password').value;
 
     //ログイン処理
@@ -22,6 +23,7 @@
           //index.htmlのサイドメニューの文字切り替え
           document.getElementById("login_button").innerHTML = "ログアウト";
           login_f = true;
+          //サイドメニューのアカウント表示メソッド
           acount();
         })
         .catch(function(err){
@@ -38,10 +40,13 @@
     </ons-toolbar>
 
   <div style="text-align: center; margin-top: 80px;">
+    <!-- ユーザー名かユーザーIDでログイン（そのうちどちらか片方にする） -->
     <p>
       <ons-input id="log_username" modifier="underbar" placeholder="ユーザーネーム" float></ons-input>
     </p>
-    <p>
+    <!-- <p>
+      <ons-input id="log_userId" modifier="underbar" placeholder="ユーザーID" float></ons-input>
+    <p> -->
       <ons-input id="log_password" modifier="underbar" type="password" placeholder="パスワード" float></ons-input>
     </p>
     <p style="margin-top: 30px;">

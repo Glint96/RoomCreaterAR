@@ -42,9 +42,9 @@
     </ons-toolbar>
 
     <!--タブの種類-->
-    <ons-tabbar swipeable id="appTabbar" position="auto">
-      <ons-tab label="家具選択" icon="ion-home" page="home.html" active></ons-tab>
-      <ons-tab label="SNS一覧" icon="ion-edit" page="sns.html"></ons-tab>
+    <ons-tabbar swipeable id="appTabbar" position="bottom">
+      <ons-tab label="家具選択" icon="md-home" page="home.html" active></ons-tab>
+      <ons-tab label="みんなの部屋" icon="md-comment-text" page="sns.html"></ons-tab>
     </ons-tabbar>
   </ons-page>
 </template>
@@ -59,10 +59,10 @@
     </div>
 
     <!--アカウント表示-->
-    <div height="80px">
-      <ons-list-item>
+    <div height="80px;">
+      <ons-list-item class="tab-list-item">
         <div class="left" style="margin-left:10px">
-            <img class="list-item__thumbnail" src="photo/sofa.png" >
+            <img class="list-item__thumbnail" id="ind_acount_Icon">
           </div>
           <div class="center" style="text-align:center">
             <div class="list-item__title"><b id="ind_acount_name"></b></div>
@@ -84,7 +84,8 @@
           <ons-icon icon="fa-external-link"></ons-icon>
         </div>    
       </ons-list-item>
-       <ons-list-item onclick="gomypage()">
+      
+      <ons-list-item onclick="gomypage()">
       <div class="left">
           <ons-icon fixed-width class="list-item__icon" icon="ion-edit, material:md-edit"></ons-icon>
         </div>
@@ -99,7 +100,7 @@
 
     <br><br>
 
-     <ons-list>
+     <ons-list style="position:absolute; margin-top:80vh; border: 1px solid rgba(0,0,0,0.2)">
       <ons-list-item onclick="gologin()">
          <div class="left">
             <ons-icon fixed-width class="list-item__icon" icon="ion-edit, material:md-edit"></ons-icon>
@@ -118,8 +119,6 @@
         // Set ons-splitter-side animation
         this.parentElement.setAttribute('animation', ons.platform.isAndroid() ? 'overlay' : 'reveal');
       };
-
-      var login_f = false;
 
       var gosns = function(){
         if(login_f){
@@ -146,6 +145,7 @@
             ons.notification.alert('ログアウトしました');
             document.getElementById("ind_acount_name").innerHTML = "";
             document.getElementById("ind_acount_post").innerHTML = "";
+            document.getElementById("ind_acount_Icon").style.visibility = "hidden";
         }else{
           fn.pushPage('login.html');
         }
@@ -253,52 +253,100 @@
     <template id="sns.html">
       <ons-page id="snsitiran">
           <ons-pull-hook id="pull-hook">
-            Pull to refresh
+              Pull to refresh
           </ons-pull-hook>
 
-           <ons-list>
-            <ons-lazy-repeat id="ind_sns-list"></ons-lazy-repeat>
-          </ons-list>
+          <div id="ind_sns_list">
+            <ons-list>
+              <ons-lazy-repeat id="ind_sns-list"></ons-lazy-repeat>
+            </ons-list>
+          </div>
 
       <script>
       //SNS一覧表示画面の更新処理（sns.html内部に書かないと動作不安定）
        ons.ready(function(){
           var pullHook = document.getElementById('pull-hook');
 
+          //pullhookを使用したときの処理
           pullHook.addEventListener('changestate', function(event) {
             var message = '';
 
             switch (event.state) {
+              //待機時または終了時
               case 'initial':
                 message = 'Pull to refresh';
+                document.getElementById("ind_sns_list").style.visibility = "visible";
+                //スクロール復帰
+                return_scroll();
                 break;
+              //使用するために引っ張っているとき
               case 'preaction':
                 message = 'Release';
                 break;
+              //使用時
               case 'action':
                 snsCount();
-                message = 'Loading...';
+                //スクロール禁止
+                no_scroll();
+                document.getElementById("ind_sns_list").style.visibility = "hidden";
+                message = ' <ons-progress-circular class="progressStyle" indeterminate></ons-progress-circular>';
                 break;
             }
-
             pullHook.innerHTML = message;
+            //console.log(event.state);
           });
-
+          //pullHookの処理時間
           pullHook.onAction = function(done) {
-            setTimeout(done, 2000);
+            //setTimeout(処理,時間);
+            //1秒 = 1000ミリ秒;
+            var time = 3000;
+            setTimeout(done, time);
           };
         });
+
+        //マウスホイールの禁止はできているもののタッチ操作の禁止ができていない  
+        // スクロール禁止
+        function no_scroll() {
+            // PCでのスクロール禁止
+            document.addEventListener("mousewheel", scroll_control, { passive: false });
+            // スマホでのタッチ操作でのスクロール禁止
+            document.addEventListener("touchmove", scroll_control, { passive: false });
+        }
+        // スクロール禁止解除
+        function return_scroll() {
+            // PCでのスクロール禁止解除
+            document.removeEventListener("mousewheel", scroll_control, { passive: false });
+            // スマホでのタッチ操作でのスクロール禁止解除
+            document.removeEventListener('touchmove', scroll_control, { passive: false });
+        }
+        // スクロール関連メソッド
+        function scroll_control(event) {
+          console.log(JSON.stringify(event));
+            event.preventDefault();
+        }
+
+        function report(){
+            var objectId = document.getElementById("ind_obj"+sns_num).innerHTML;
+           //投稿取得
+            SNSData
+            .equalTo("objectId",objectId)
+            .fetch()
+            .then(function(res){
+              res[0].set("report", 2);
+              return res[0].update(); // 保存したオブジェクトを更新
+            });
+          }
       </script>
       </ons-page>
     </template>
 
     <!--SNS一覧のポップアップメニューの中身-->
-     <ons-popover cancelable mask-color="rgba(0,0,0,0)" direction="down" id="popover">
+     <ons-popover cancelable mask-color="rgba(0,0,0,0)" direction="down" id="popover1">
       <ons-list>
          <ons-list-item>
             この投稿を非表示にする
          </ons-list-item>
-          <ons-list-item>
+          <ons-list-item onclick="report()">
             報告
           </ons-list-item>
       </ons-list>
@@ -316,11 +364,54 @@
         </ons-toolbar>
 
         <ons-list>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット小屋</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット椅子</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット用トイレ</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">ペット用皿</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">キャットタワー</ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>ペット小屋</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>ペット椅子</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>ペット用<br>トイレ</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>ペット用皿</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>キャット<br>タワー</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>ああああああああああああ</span>
+            </div>
+          </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -337,10 +428,39 @@
         </ons-toolbar>
 
         <ons-list>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル1</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル2</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル3</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">テーブル4</ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+
         </ons-list>
       </ons-page>
   </template>
@@ -357,11 +477,54 @@
         </ons-toolbar>
 
         <ons-list>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー1</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー2</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー3</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー4</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">ソファー5</ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -378,12 +541,54 @@
         </ons-toolbar>
 
         <ons-list>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子1</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子2</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子3</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子4</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子5</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">椅子6</ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -400,8 +605,22 @@
         </ons-toolbar>
 
         <ons-list>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">棚1</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">棚2</ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -418,10 +637,38 @@
         </ons-toolbar>
 
         <ons-list>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">机1</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">机2</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">机3</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">机4</ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -438,7 +685,14 @@
         </ons-toolbar>
 
         <ons-list>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">照明1</ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -455,17 +709,71 @@
         </ons-toolbar>
 
         <ons-list>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨1</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨2</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨3</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨4</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨5</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨6</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨7</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨8</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨9</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨10</ons-card>
-          <ons-card onclick="fn.pushPage('color_sentaku.html')">雑貨11</ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+
         </ons-list>
       </ons-page>
   </template>
@@ -482,12 +790,54 @@
         </ons-toolbar>
 
         <ons-list>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン1</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン2</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン3</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン4</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン5</ons-card>
-         <ons-card onclick="fn.pushPage('color_sentaku.html')">カーテン6</ons-card>
+        <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/inugoyared.png">
+            </div>
+            <div class="kagu_name">
+              <span>家具名</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>

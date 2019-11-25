@@ -1,8 +1,8 @@
 <ons-page id="dialogs-page">
   <script>
     //端末の準備ができたら呼び出し
-    document.addEventListener("deviceready", snsReady, false);
-    function snsReady(){
+    // document.addEventListener("deviceready", snsReady, false);
+    // function snsReady(){
       //フォームの要素を取得
       var button = document.getElementById("button");
       var form = document.getElementById("form");
@@ -29,15 +29,15 @@
         }
 
       //ファイルを選択したら実行
-      var photo = document.getElementById("sns_photo");
+      var photo = document.getElementById("tou_photo");
       photo.addEventListener('change',function(e) {
         e.preventDefault();
         var file = e.target.files[0];
         reader.onload = function(e) {
           //プレビュー
-          var img = document.getElementById("sns_img");
+          var img = document.getElementById("tou_img");
           img.src = e.target.result;
-          document.getElementById("sns_img").style.display = "block";
+          document.getElementById("tou_img").style.visibility = "visible";
         }
         reader.readAsDataURL(file);
       }, false);
@@ -49,13 +49,13 @@
         
         //ons.notification.alert("ログイン中のユーザー: " + currentUser.get("userName"));
           
-        //ニフクラのsnsData取得
+        //ニフクラに新規データ作成
         var snsData = new SNSData();
           
         var name_f = true;//ファイル選択済みかの識別用フラグ
 
         //ファイル名、ファイルデータを取得
-        if(document.getElementById("sns_photo").files[0] === undefined){
+        if(document.getElementById("tou_photo").files[0] === undefined){
           ons.notification.alert("画像を選択してください");
           name_f = false;
         }else{
@@ -72,10 +72,9 @@
           }
           //ファイルの名前そのままで管理すると重複してSNS画面にて違うデータを表示する可能性有り
           //ランダムな文字列とファイル名で重複する確率を下げる
-          var fileName = code + document.getElementById("sns_photo").files[0].name;
+          var fileName = code + document.getElementById("tou_photo").files[0].name;
         }
-        var fileData = document.getElementById("sns_photo").files[0];
-        document.getElementById("sns")
+        var fileData = document.getElementById("tou_photo").files[0];
 
         //console.log(fileName);
         //console.log(fileData);
@@ -83,7 +82,7 @@
         currentUser = ncmb.User.getCurrentUser();
 
         if(name_f){
-          //テキストデータアップロード
+          //ニフクラに新規データアップロード
           snsData.set("text",textarea.value)
                 .set("userName", currentUser.get("userName"))
                 .set("picture",fileName)
@@ -96,16 +95,16 @@
                 });
           
           //画像ファイルアップロード
-          ncmb.File.upload(fileName, fileData)
-                .then(function(res){
-                  ons.notification.alert(res+"1");
-                })
-                .catch(function(err){
-                  ons.notification.alert(err+"2");
-                });
+          ncmb.File.upload(fileName, fileData);
+                // .then(function(res){
+                //   ons.notification.alert(res+"1");
+                // })
+                // .catch(function(err){
+                //   ons.notification.alert(err+"2");
+                // });
         }
       },false);
-    }
+    // }
 
     //ページを閉じるときに実行
     document.addEventListener("hide",function(){
@@ -127,14 +126,16 @@
 	    <textarea id="textarea" name="textarea" cols="15" rows="10" maxlength="150" placeholder="文字を入力してください"></textarea>
       <div id="moji_cnt">150/150</div>
       <!--プレビュー画像サイズ調整まだ-->
-      <img id="sns_img">
     </form>
-    <div id="button">
-      <label for="sns_photo" class="file-btn">
-        写真選択
-        <input type="file" id="sns_photo" accept="image/*">
-      </label><br><br>
-      <ons-input type="submit" id="toukou" value="投稿"></ons-input>
+    <div style="text-align:center">
+      <img id="tou_img">
+      <div class="tou_button">
+        <label for="tou_photo" class="file-btn">
+          写真選択
+          <input type="file" id="tou_photo" accept="image/*">
+        </label><br><br>
+        <ons-input type="submit" id="toukou" value="投稿"></ons-input>
+      </div>
     </div>
   </div>
 </ons-page>

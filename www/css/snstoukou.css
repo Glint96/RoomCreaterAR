@@ -13,13 +13,27 @@ body{
   border: 1px solid #444;
   border-radius: 5px;
 }
-#sns_img{/*画像プレビュー*/
-  display: none;
-  /*marginはblockを真ん中に*/
-  margin: 0 auto;
+
+/*画像プレビュー*/
+#tou_img{
+  /* visibility: hidden; */
+  position: absolute;
+  margin-left: 15%;
+  margin-top:-70px;
+  width: 115px;
   max-height: 200px;/*縦200pxまで*/
-  max-width: 300px;/*横300pxまで*/
 }
+.tou_button{
+  margin: 0 auto;
+  margin-top:80px; 
+  width: 25%;
+}
+#toukou{
+  margin-top: 40px;
+  margin-bottom: 50px;
+}
+
+/* ファイルボタン（写真選択）のデザイン */
 .file-btn {
     display: inline-block;
     padding: 8px 12px;
@@ -28,6 +42,7 @@ body{
     background: rgb(13, 139, 80);
     cursor: pointer;
 }
+/* ファイルボタンのデフォルトデザイン隠蔽 */
 .file-btn input {
     display: none;
 }

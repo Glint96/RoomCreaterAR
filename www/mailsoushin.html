@@ -1,15 +1,5 @@
     <ons-page id="soushin">
-      <!--メール送信はオフにしています-->
         <script>
-          var backLogin = function(){
-            //console.log(document.getElementById("appNavigator").topPage);
-            var page = document.getElementById("appNavigator");
-            var pages = page.pages;
-            pages[pages.length-2].remove();
-            //console.log(pages);
-            page.popPage();
-          }
-
           var mailsend = function(){
             
           }
@@ -36,7 +26,7 @@
           </p>
 
           <p style="margin-top:100px">
-            <ons-button style="background-color:red" onclick="backLogin()">ログイン画面に戻る</ons-button>
+            <ons-button style="background-color:red" onclick="document.getElementById('appNavigator').popPage()">ログイン画面に戻る</ons-button>
           </p>
       </div>
     </ons-page>

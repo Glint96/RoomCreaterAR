@@ -1,16 +1,21 @@
 <ons-page class="main_pages"  id="profile-page">
   <script>
-   
+    //ページ更新をフラグで管理しようとしてみたものの、あまりうまくいっていない
+    var profpage_flg = true;
 
     //ページ読込時に実行
-    document.addEventListener('init',function(e){
-      if(e.target.matches('#profile-page')){
+    document.addEventListener('show',function(e){
+        if(e.target.matches('#profile-page')||e.target.matches('#userEdit')){
           currentUser = ncmb.User.getCurrentUser();
           currentUserName = currentUser.get("userName");
           //index.htmlとmypage.htmlのアカウント名を使用ユーザに書き換え
           document.getElementById("my_acount_name").innerHTML = currentUserName;
-          mysnsCount();
-          }   
+          if(profpage_flg){
+            console.log(profpage_flg);
+            mysnsCount();
+            profpage_flg = false;
+          }
+        }   
     });
 
     function mysnsCount(){
@@ -31,18 +36,25 @@
 
     function deleteSNS(){
       var objectId = document.getElementById("my_obj"+sns_num).innerHTML;
-      //投稿数取得
+      //投稿取得
       SNSData
       .equalTo("objectId",objectId)
-      .fetchAll()
+      .fetch()
       .then(function(res){
-        console.log(res[0]);
-        res[0].delete()
-        alert("投稿を削除しました");
-        mysnsCount();
+        //投稿を削除
+        res.delete()
+        .then(function(){
+          // 投稿の画像を削除
+          ncmb.File.delete(res.picture);
+          alert("投稿を削除しました");
+          mysnsCount();
+          destroy_f = true;
+          });
+
       },function(err){
         alert(err);
       });
+      hidePopover();
     }
   </script>
 
@@ -52,21 +64,24 @@
       </div>
       <div class="center">マイページ</div>
       <div class="right">
-        <ons-toolbar-button><ons-icon icon="ion-gear-a"></ons-icon></ons-toolbar-button>
+        <span class="corner-button" modifier="quiet" onclick="showPopover(this,0,2)">
+          <ons-icon icon="md-settings" style="color:#FFF; margin-right:5px"></ons-icon>
+        </span>
       </div>
     </ons-toolbar>
 
     <div class="content" style="background-color: white !important">
 
+      <!-- プロフィール -->
       <div style="padding: 14px 6px 14px 16px; border-bottom:1px solid rgba(187, 187, 187, 0.51)">
         <div class="profile_wrapper">
           <div class="profile_image_wrapper">
             <ons-icon size="24px" icon="ion-ios-plus"></ons-icon>
-            <img src="photo/sofa.png">
+            <img src="photo/defaultIcon.png">
           </div>
           <div class="profile_info_wrapper">
             <!--名前-->
-            <div><p class="profile_extra_wrapper" id="my_acount_name"></p></div>
+            <div><p class="profile_extra_wrapper" id="my_acount_name" style="font-size:20px"></p></div>
             <div class="profile_info_numbers">
               <!--投稿数-->
               <div style="margin-top:30px">
@@ -82,23 +97,46 @@
                 <div class="profile_info_text"></div>
               </div>
             </div>
-           
           </div>
         </div>
       </div>
-    
-    <!--投稿を表示-->
-      <div id="list_view">
-        <ons-list>
-           <ons-lazy-repeat id="my_sns-list"></ons-lazy-repeat>
-        </ons-list>
-    </div>
+
+      <!-- タブ -->
+      <ons-tabbar swipeable position="auto" style="margin-top:115px;">
+        <ons-tab page="mysns.html" class="my_tabbar" icon="md-view-list" active>
+        </ons-tab>
+        <ons-tab page="likesns.html" class="my_tabbar" icon="md-favorite">
+        </ons-tab>
+      </ons-tabbar>
+
   </ons-page>
 
+    <template id="mysns.html">
+      <ons-page id="mysns">
+        <!--投稿を表示-->
+        <div id="list_view">
+          <ons-list>
+            <ons-lazy-repeat id="my_sns-list"></ons-lazy-repeat>
+          </ons-list>
+        </div>
+      </ons-page>
+    </template>
+  
+    <template id="likesns.html">
+      <ons-page id="likesns">
+      <!--投稿を表示-->
+      <div id="list_view">
+        <ons-list>
+          <ons-lazy-repeat id="like_sns-list"></ons-lazy-repeat>
+        </ons-list>
+      </div>
+      </ons-page>
+    </template>
+
     <!--マイページのポップアップメニューの中身-->
-    <ons-popover cancelable mask-color="rgba(0,0,0,0)" style="margin-top:-50px" direction="down" id="popover">
+    <ons-popover cancelable mask-color="rgba(0,0,0,0)" style="margin-top:-50px" direction="down" id="popover1">
       <ons-list>
-        <ons-list-item>
+        <ons-list-item onclick="fn.pushPage('textEdit.html')">
           編集
         </ons-list-item>
         <ons-list-item onclick="deleteSNS()">
@@ -106,3 +144,201 @@
         </ons-list-item>
       </ons-list>
     </ons-popover>
+
+    <ons-popover cancelable direction="down"  style="margin-top:-40px" id="popover2">
+      <ons-list>
+        <ons-list-item onclick="fn.replacePage('userEdit.html')">
+          アカウントを編集する
+        </ons-list-item>
+      </ons-list>
+    </ons-popover>
+
+  <!-- <template id="textEdit.html">
+    <script>
+      // 投稿のオブジェクトID(非表示)を取得
+      var objectId = document.getElementById("my_obj"+sns_num).innerHTML;
+      //フォームの要素を取得
+      var form = document.getElementById("form");
+      var textarea = document.getElementById("textarea");
+      //文字数制限
+      //getAttributeメソッドで属性を取得可能
+      var maxTextNum = textarea.getAttribute("maxlength");
+      //テキストエリアで要素をタイプした時。
+      //残り文字数を表示する要素の追加
+      textarea.addEventListener("keyup", function() {
+        var currentTextNum = textarea.value.length;
+        //マイナスにならないよう
+        var count = maxTextNum - currentTextNum;
+        if(count < 0){
+          count = 0;
+        }
+        document.getElementById("moji_cnt").innerHTML = count + "/150";
+      });
+
+      //投稿取得
+      SNSData
+      .equalTo("objectId",objectId)
+      .fetch()
+      .then(function(res){
+        textarea.innerHTML = res[0].get("text");
+      });
+    </script>
+
+     <!--フォーム
+    <div id="form-main">
+      <form action="" id="form">
+        <textarea id="textarea" name="textarea" cols="15" rows="10" maxlength="150" placeholder="文字を入力してください"></textarea>
+        <div id="moji_cnt">150/150</div>
+        <img id="sns_img">
+      </form>
+        <ons-input type="submit" id="toukou" value="変更"></ons-input>
+      </div>
+  </template> -->
+
+  <template id="userEdit.html">
+    <ons-page id="userEdit">
+      <script>
+        
+      </script>
+
+      <ons-toolbar>
+        <div class="left">
+          <ons-toolbar-button onclick="fn.replacePage('mypage.html')">
+            <i class="zmdi zmdi-arrow-left"></i>
+          </ons-toolbar-button>
+        </div>
+        <div class="center">ユーザー編集</div>
+        <div class="right"></div>
+      </ons-toolbar>
+
+      <!-- アイコン編集 -->
+      <ons-list style="margin-top:10px">
+        <ons-list-item class="dialog-list-item">
+          <div class="left">
+            <div class="profile_image_wrapper">
+              <img src="photo/defaultIcon.png" style="width:90%; border-style:solid">
+            </div>
+          </div>
+          <div class="center"></div>
+          <div class="right">
+            <ons-button class="dialog-button">編集</ons-button>
+          </div>
+        </ons-list-item>
+
+        <!-- 名前変更 -->
+        <ons-list-item class="dialog-list-item">
+           <div class="left">
+             <p class="profile_extra_wrapper" id="my_acount_name" style="font-size:20px"></p>
+           </div>
+          <div class="center"></div>
+          <div class="right">
+            <ons-button class="dialog-button" onclick="showDialog('name')">編集</ons-button>
+          </div>
+        </ons-list-item>
+
+        <!-- メールアドレス編集 -->
+        <ons-list-item class="dialog-list-item">
+           <div class="left">メールアドレス</div>
+          <div class="center"></div>
+          <div class="right">
+            <ons-button class="dialog-button" onclick="showDialog('mail')">編集</ons-button>
+          </div>
+        </ons-list-item>
+
+        <!-- 退会処理 -->
+        <ons-list-item class="dialog-list-item">
+           <div class="left">退会する</div>
+          <div class="center"></div>
+          <div class="right">
+            <ons-button class="dialog-button" onclick="showDialog('unsub')">退会</ons-button>
+          </div>
+        </ons-list-item>
+      </ons-list>
+
+        <!-- 名前変更 -->
+       <ons-dialog id="name-dialog" animation="default" cancelable>
+          <div class="dialog-mask"></div>
+            <div class="dialog">
+              <!--ダイアログの大きさ変更-->
+              <div class="dialog-container">
+              <ons-page>
+                <ons-toolbar>
+                  <div class="left">
+                    <ons-toolbar-button onclick="hideDialog('name')" style="margin-left:5px"><i class="zmdi zmdi-tag-close"></i>
+                   </ons-toolbar-button>
+                  </div>
+                  <div class="center">名前編集</div>
+                </ons-toolbar>
+              
+              <div class="content">
+                <div style="text-align:center; margin-top: 40px;">
+                   <p><ons-input id="my_username" modifier="underbar" placeholder="新しいユーザーネームを入力" float></ons-input></p>
+                </div>
+
+                <div style="text-align:center; margin-top:80px;">
+                  <ons-button onclick="nameEdit()">変更</ons-button>
+                </div>
+              </div>
+            </ons-page>
+          </div>
+        </div>
+      </ons-dialog>
+
+        <!-- メールアドレス -->
+       <ons-dialog id="mail-dialog" animation="default" cancelable>
+          <div class="dialog-mask"></div>
+            <div class="dialog">
+              <!--ダイアログの大きさ変更-->
+              <div class="dialog-container">
+              <ons-page>
+                <ons-toolbar>
+                  <div class="left">
+                    <ons-toolbar-button onclick="hideDialog('mail')" style="margin-left:5px"><i class="zmdi zmdi-tag-close"></i>
+                   </ons-toolbar-button>
+                  </div>
+                  <div class="center">メールアドレス</div>
+                </ons-toolbar>
+              
+              <div class="content">
+                   <div style="text-align:center; margin-top: 40px;">
+                   <p><ons-input id="my_username" modifier="underbar" placeholder="新しいメールアドレス" float></ons-input></p>
+                </div>
+
+                <div style="text-align:center; margin-top:80px;">
+                  <ons-button>変更</ons-button>
+                </div>
+              </div>
+              </div>
+            </ons-page>
+          </div>
+        </div>
+      </ons-dialog>
+
+        <!-- 退会 -->
+       <ons-dialog id="unsub-dialog" animation="default" cancelable>
+          <div class="dialog-mask"></div>
+            <div class="dialog">
+              <!--ダイアログの大きさ変更-->
+              <div class="dialog-container">
+              <ons-page>
+                <ons-toolbar>
+                  <div class="left">
+                    <ons-toolbar-button onclick="hideDialog('unsub')" style="margin-left:5px"><i class="zmdi zmdi-tag-close"></i>
+                   </ons-toolbar-button>
+                  </div>
+                  <div class="center">退会</div>
+                </ons-toolbar>
+              
+              <div class="content">
+                <div style="text-align: center">
+                  <p>This is just an example.</p>
+                  <br>
+                </div>
+              </div>
+            </ons-page>
+          </div>
+        </div>
+      </ons-dialog>
+
+    </ons-page>
+  </template>

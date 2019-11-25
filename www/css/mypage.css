@@ -151,3 +151,25 @@
 .grid_thumbnail {
   width: 100%;
 }
+
+.dialog{
+  height:300px;
+}
+.dialog-list-item{
+  height:110px;
+  border:1px solid rgba(187, 187, 187, 0.51);
+  margin-bottom:20px;
+}
+
+.dialog-button{
+  background-color:#FFF;
+  color:#000;
+}
+
+.profile_button_bar{
+  text-align: center;
+  font-size: 26px;
+  height: 50px;
+  line-height: 40px;
+  border-top: 1px solid rgba(187, 187, 187, 0.51)
+}

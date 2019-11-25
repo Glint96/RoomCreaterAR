@@ -3,7 +3,7 @@
 
     //入力確認
     //#usernameと#passwordはlogin.htmlで使用している
-    //このページで使用するとvalueが取得できなくなるため
+    //pushPageの仕様上、このページで使用するとvalueが取得できなくなるため
     //特定のページのidの取得の仕方がわかるまで別のidを入れる
     var pass = function() {
       var mail = document.getElementById("mail").value;
@@ -27,10 +27,17 @@
           user.set("userName", name) /* ユーザー名 */
               .set("password", password1) /* パスワード */
               .set("mailAddress", mail); /* メールアドレス */
+
           // ユーザーの新規登録処理
           user.signUpByAccount()
               .then(function(){
-                  fn.pushPage('mailsoushin.html');
+                  //acountDataに新規会員データ保存（お気に入りとアイコン用）
+                  new acountData()
+                  .set("userName", name)  //本当はユーザーのオブジェクトIDで制御したいけど面倒なのでユーザー名
+                  .set("likeSns",[])
+                  .set("userIcon","defaultIcon.png")
+                  .save();
+                  fn.replacePage('mailsoushin.html');
               })
               .catch(function(err){
                 ons.notification.alert("登録に失敗しました");
@@ -48,9 +55,13 @@
     </ons-toolbar>
 
      <div style="text-align: center; margin-top: 80px;">
+       <!-- ログインページがユーザー名かユーザーIDどちらで認証するかで変える -->
     <p>
       <ons-input id="mail" modifier="underbar" type="email" placeholder="メールアドレス" float></ons-input>
     </p>
+    <!-- <p>
+      <ons-input id="reg_userId" modifier="unserbar" placeholder="ユーザーID" float></ons-input>
+    </p> -->
     <p style="margin-top: 30px;">
       <ons-input id="reg_username" modifier="underbar" placeholder="ユーザーネーム" float></ons-input>
     </p>
