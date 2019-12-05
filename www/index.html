@@ -55,7 +55,7 @@
     <div class="profile-pic" onclick="fn.pushPage('developer.html')">
       <!--ここに可能ならオリジナルロゴか何かを入れる-->
       <!--又は簡易プロフィールか何か-->
-      <img src="https://monaca.io/img/logos/download_image_onsenui_01.png">
+      <img src="photo/logo.png">
     </div>
 
     <!--アカウント表示-->
@@ -304,26 +304,7 @@
           };
         });
 
-        //マウスホイールの禁止はできているもののタッチ操作の禁止ができていない  
-        // スクロール禁止
-        function no_scroll() {
-            // PCでのスクロール禁止
-            document.addEventListener("mousewheel", scroll_control, { passive: false });
-            // スマホでのタッチ操作でのスクロール禁止
-            document.addEventListener("touchmove", scroll_control, { passive: false });
-        }
-        // スクロール禁止解除
-        function return_scroll() {
-            // PCでのスクロール禁止解除
-            document.removeEventListener("mousewheel", scroll_control, { passive: false });
-            // スマホでのタッチ操作でのスクロール禁止解除
-            document.removeEventListener('touchmove', scroll_control, { passive: false });
-        }
-        // スクロール関連メソッド
-        function scroll_control(event) {
-          console.log(JSON.stringify(event));
-            event.preventDefault();
-        }
+       
 
         function report(){
             var objectId = document.getElementById("ind_obj"+sns_num).innerHTML;
@@ -366,6 +347,38 @@
         <ons-list>
           <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
+              <img src="photo/prev/cattower_b.png">
+            </div>
+            <div class="kagu_name">
+              <span>キャット<br>タワー1</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/cattower_c.png">
+            </div>
+            <div class="kagu_name">
+              <span>キャット<br>タワー2</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/cattower_high.png">
+            </div>
+            <div class="kagu_name">
+              <span>キャット<br>タワー3</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/cattower_m.png">
+            </div>
+            <div class="kagu_name">
+              <span>キャット<br>タワー4</span>
+            </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
               <img src="photo/inugoyared.png">
             </div>
             <div class="kagu_name">
@@ -396,22 +409,7 @@
               <span>ペット用皿</span>
             </div>
           </ons-card>
-          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>キャット<br>タワー</span>
-            </div>
-          </ons-card>
-          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>ああああああああああああ</span>
-            </div>
-          </ons-card>
+          
         </ons-list>
       </ons-page>
   </template>
@@ -430,37 +428,68 @@
         <ons-list>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/table.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>テーブル</span>
             </div>
          </ons-card>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/table2.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>テーブル2</span>
             </div>
          </ons-card>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/table_c.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>テーブル3</span>
             </div>
          </ons-card>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/table_double.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>テーブル4</span>
             </div>
          </ons-card>
-
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+              <div class="kagu_img">
+                <img src="photo/prev/table_large.png">
+              </div>
+              <div class="kagu_name">
+                <span>テーブル4</span>
+              </div>
+          </ons-card>
+          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/table_low.png">
+            </div>
+            <div class="kagu_name">
+              <span>テーブル4</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/small_table.png">
+            </div>
+            <div class="kagu_name">
+              <span>テーブル4</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/chab_table.png">
+            </div>
+            <div class="kagu_name">
+              <span>テーブル4</span>
+            </div>
+         </ons-card>
         </ons-list>
       </ons-page>
   </template>
@@ -479,52 +508,21 @@
         <ons-list>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/sofa.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>ソファ1</span>
             </div>
          </ons-card>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/sofa_low.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>ソファ2</span>
             </div>
          </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
+         
         </ons-list>
       </ons-page>
   </template>
@@ -543,10 +541,26 @@
         <ons-list>
           <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/chair.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>椅子1</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/chair_c.png">
+            </div>
+            <div class="kagu_name">
+              <span>椅子2</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/chair_caster.png">
+            </div>
+            <div class="kagu_name">
+              <span>椅子3</span>
             </div>
          </ons-card>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
@@ -557,38 +571,7 @@
               <span>家具名</span>
             </div>
          </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
+         
         </ons-list>
       </ons-page>
   </template>
@@ -607,18 +590,34 @@
         <ons-list>
           <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/bookshelf.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>本棚1</span>
             </div>
          </ons-card>
          <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/bookshelf_large.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>本棚2</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/tvstand.png">
+            </div>
+            <div class="kagu_name">
+              <span>テレビスタンド1</span>
+            </div>
+         </ons-card>
+         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
+            <div class="kagu_img">
+              <img src="photo/prev/tvstand_a.png">
+            </div>
+            <div class="kagu_name">
+              <span>テレビスタンド2</span>
             </div>
          </ons-card>
         </ons-list>
@@ -639,36 +638,13 @@
         <ons-list>
           <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
             <div class="kagu_img">
-              <img src="photo/inugoyared.png">
+              <img src="photo/prev/desk.png">
             </div>
             <div class="kagu_name">
-              <span>家具名</span>
+              <span>机</span>
             </div>
          </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
-         <ons-card class="kagu_card" onclick="fn.pushPage('color_sentaku.html')">
-            <div class="kagu_img">
-              <img src="photo/inugoyared.png">
-            </div>
-            <div class="kagu_name">
-              <span>家具名</span>
-            </div>
-         </ons-card>
+         
         </ons-list>
       </ons-page>
   </template>

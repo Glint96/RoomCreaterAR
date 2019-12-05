@@ -95,7 +95,7 @@
           document.getElementById("ind_acount_post").innerHTML = countpost;
 
           acountData
-          .equalTo("username",currentUser.username)
+          .equalTo("userName",currentUser.username)
           .fetch()
           .then(function(res){
             //console.log(JSON.stringify(res));
@@ -150,6 +150,17 @@
           dialog.show();
         } else {
           ons.createElement('mail-dialog.html', { append: true })
+            .then(function(dialog) {
+              dialog.show();
+            });
+        }
+        break;
+    case "ar":
+        var dialog = document.getElementById('ar-dialog');
+        if (dialog) {
+          dialog.show();
+        } else {
+          ons.createElement('ar-dialog.html', { append: true })
             .then(function(dialog) {
               dialog.show();
             });

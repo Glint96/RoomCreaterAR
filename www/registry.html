@@ -6,7 +6,7 @@
     //pushPageの仕様上、このページで使用するとvalueが取得できなくなるため
     //特定のページのidの取得の仕方がわかるまで別のidを入れる
     var pass = function() {
-      var mail = document.getElementById("mail").value;
+      var mail = document.getElementById("reg_mail").value;
       var name = document.getElementById("reg_username").value;
       var password1 = document.getElementById('reg_password').value;
       var password2 = document.getElementById('repassword').value;
@@ -57,7 +57,7 @@
      <div style="text-align: center; margin-top: 80px;">
        <!-- ログインページがユーザー名かユーザーIDどちらで認証するかで変える -->
     <p>
-      <ons-input id="mail" modifier="underbar" type="email" placeholder="メールアドレス" float></ons-input>
+      <ons-input id="reg_mail" modifier="underbar" type="email" placeholder="メールアドレス" float></ons-input>
     </p>
     <!-- <p>
       <ons-input id="reg_userId" modifier="unserbar" placeholder="ユーザーID" float></ons-input>

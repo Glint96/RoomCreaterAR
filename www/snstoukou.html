@@ -59,6 +59,7 @@
           ons.notification.alert("画像を選択してください");
           name_f = false;
         }else{
+          //ランダムな文字列生成
            // 生成する文字列の長さ
           var l = 8;
 
@@ -70,6 +71,7 @@
           for(var i=0; i<l; i++){
             code += c[Math.floor(Math.random()*cl)];
           }
+
           //ファイルの名前そのままで管理すると重複してSNS画面にて違うデータを表示する可能性有り
           //ランダムな文字列とファイル名で重複する確率を下げる
           var fileName = code + document.getElementById("tou_photo").files[0].name;

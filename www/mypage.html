@@ -8,11 +8,11 @@
         if(e.target.matches('#profile-page')||e.target.matches('#userEdit')){
           currentUser = ncmb.User.getCurrentUser();
           currentUserName = currentUser.get("userName");
-          //index.htmlとmypage.htmlのアカウント名を使用ユーザに書き換え
+          //mypage.htmlのアカウント名を使用ユーザに書き換え
           document.getElementById("my_acount_name").innerHTML = currentUserName;
           if(profpage_flg){
-            console.log(profpage_flg);
             mysnsCount();
+            likeSnsCount();
             profpage_flg = false;
           }
         }   
@@ -27,12 +27,38 @@
         .then(function(res){ 
           var post = res.count;
           document.getElementById("my_acount_post").innerHTML = post;
-          var snsList = document.getElementById('my_sns-list');
+          var snsList = document.getElementById('my_sns-list');  
           snsMake(res,snsList,"mysns");
         },function(err){
           console.log(err);
         });
     }
+
+    function likeSnsCount(){
+      // ユーザーのお気に入り情報獲得
+      var currentUser = document.getElementById("my_acount_name").innerHTML;
+      acountData
+      .equalTo("userName",currentUser)
+      .fetch()
+      .then(function(res_sns){
+        likeItem = res_sns.likeSns;
+        //console.log(res_sns.likeSns);
+        //console.log(likeItem.length);
+        //アカウントテーブルからお気に入り処理したデータを入れた配列を取得してから引き渡し
+        //取得してからじゃないとundefinedになり正しく動作しない
+        //投稿数取得
+        SNSData
+        .in("objectId",likeItem)
+        .count()
+        .fetchAll()
+        .then(function(res){ 
+          var post = res.count;
+          console.log(post);
+          var snsList = document.getElementById('like_sns-list');  
+          snsMake(res,snsList,"likesns");
+          });
+        });
+      }
 
     function deleteSNS(){
       var objectId = document.getElementById("my_obj"+sns_num).innerHTML;
@@ -76,8 +102,8 @@
       <div style="padding: 14px 6px 14px 16px; border-bottom:1px solid rgba(187, 187, 187, 0.51)">
         <div class="profile_wrapper">
           <div class="profile_image_wrapper">
-            <ons-icon size="24px" icon="ion-ios-plus"></ons-icon>
-            <img src="photo/defaultIcon.png">
+            <!-- アイコン画像 -->
+            <img id="my_acount_icon" src="photo/defaultIcon.png">
           </div>
           <div class="profile_info_wrapper">
             <!--名前-->
@@ -124,12 +150,59 @@
   
     <template id="likesns.html">
       <ons-page id="likesns">
+        <ons-pull-hook id="like_pull-hook">
+           Pull to refresh
+        </ons-pull-hook>
+
       <!--投稿を表示-->
       <div id="list_view">
         <ons-list>
           <ons-lazy-repeat id="like_sns-list"></ons-lazy-repeat>
         </ons-list>
       </div>
+
+      <script>
+      //更新処理（使用するhtml内部に書かないと動作不安定）
+        ons.ready(function(){
+            var pullHook = document.getElementById('like_pull-hook');
+
+            //pullhookを使用したときの処理
+            pullHook.addEventListener('changestate', function(event) {
+              var message = '';
+
+              switch (event.state) {
+                //待機時または終了時
+                case 'initial':
+                  message = 'Pull to refresh';
+                  document.getElementById("like_sns-list").style.visibility = "visible";
+                  //スクロール復帰
+                  return_scroll();
+                  break;
+                //使用するために引っ張っているとき
+                case 'preaction':
+                  message = 'Release';
+                  break;
+                //使用時
+                case 'action':
+                  likesnsCount();
+                  //スクロール禁止
+                  no_scroll();
+                  document.getElementById("like_sns-list").style.visibility = "hidden";
+                  message = ' <ons-progress-circular class="progressStyle" indeterminate></ons-progress-circular>';
+                  break;
+              }
+              pullHook.innerHTML = message;
+              //console.log(event.state);
+            });
+            //pullHookの処理時間
+            pullHook.onAction = function(done) {
+              //setTimeout(処理,時間);
+              //1秒 = 1000ミリ秒;
+              var time = 3000;
+              setTimeout(done, time);
+            };
+          });
+        </script>
       </ons-page>
     </template>
 
@@ -198,7 +271,7 @@
   <template id="userEdit.html">
     <ons-page id="userEdit">
       <script>
-        
+         
       </script>
 
       <ons-toolbar>
@@ -216,12 +289,15 @@
         <ons-list-item class="dialog-list-item">
           <div class="left">
             <div class="profile_image_wrapper">
-              <img src="photo/defaultIcon.png" style="width:90%; border-style:solid">
+              <img id="my_acount_icon" src="photo/defaultIcon.png" style="width:90%; border-style:solid">
             </div>
           </div>
           <div class="center"></div>
           <div class="right">
-            <ons-button class="dialog-button">編集</ons-button>
+            <label for="my_acount_icon" class="changefile-btn">
+              編集
+              <input type="file" id="my_acount_icon" accept="image/*">
+            </label>
           </div>
         </ons-list-item>
 
@@ -255,7 +331,7 @@
         </ons-list-item>
       </ons-list>
 
-        <!-- 名前変更 -->
+        <!-- 名前変更ダイアログ -->
        <ons-dialog id="name-dialog" animation="default" cancelable>
           <div class="dialog-mask"></div>
             <div class="dialog">
@@ -284,7 +360,7 @@
         </div>
       </ons-dialog>
 
-        <!-- メールアドレス -->
+        <!-- メールアドレスダイアログ -->
        <ons-dialog id="mail-dialog" animation="default" cancelable>
           <div class="dialog-mask"></div>
             <div class="dialog">
@@ -301,7 +377,7 @@
               
               <div class="content">
                    <div style="text-align:center; margin-top: 40px;">
-                   <p><ons-input id="my_username" modifier="underbar" placeholder="新しいメールアドレス" float></ons-input></p>
+                   <p><ons-input id="my_mail" modifier="underbar" placeholder="新しいメールアドレス" float></ons-input></p>
                 </div>
 
                 <div style="text-align:center; margin-top:80px;">
@@ -314,7 +390,7 @@
         </div>
       </ons-dialog>
 
-        <!-- 退会 -->
+        <!-- 退会ダイアログ -->
        <ons-dialog id="unsub-dialog" animation="default" cancelable>
           <div class="dialog-mask"></div>
             <div class="dialog">
@@ -328,17 +404,37 @@
                   </div>
                   <div class="center">退会</div>
                 </ons-toolbar>
-              
+              <!-- 内容 -->
               <div class="content">
-                <div style="text-align: center">
-                  <p>This is just an example.</p>
-                  <br>
+               <div style="text-align:center; margin-top: 40px;">
+                   <p><ons-input id="my_password" modifier="underbar" placeholder="パスワードを入力" float></ons-input></p>
                 </div>
+
+                <div style="text-align:center; margin-top:80px;">
+                  <ons-button onclick="show_unsub()">退会</ons-button>
+                </div>
+
               </div>
             </ons-page>
           </div>
         </div>
       </ons-dialog>
 
+      <template id="alert-dialog.html">
+        <ons-alert-dialog id="my-alert-dialog" modifier="rowfooter">
+          <div class="alert-dialog-content">
+            本当に退会しますか？
+          </div>
+          <div class="alert-dialog-footer">
+            <ons-alert-dialog-button onclick="hideAlertDialog()">いいえ</ons-alert-dialog-button>
+            <ons-alert-dialog-button onclick="unsub()">はい</ons-alert-dialog-button>
+          </div>
+        </ons-alert-dialog>
+      </template>
+
     </ons-page>
+
+    
   </template>
+
+  

@@ -1,21 +1,144 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
-    <link rel="stylesheet" href="components/loader.css">
-    <script src="components/loader.js"></script>
-    <script>
-      //Monaca上ではAndroid端末でしか動きません
-      //本格的なAR実装はar.htmlのほうでやる
-      //color_sentaku.html内部のgoAR()のコメント入れ替えでページ遷移変更
-      ons.ready(function(){
-        location.href = "https://apps.8thwall.com/qsdjsarz/table";
-      });
+    <title>ルムクリ</title>
+
+    <!--A-Frame,jsの読み込み -->
+    <script src="//cdn.8thwall.com/web/aframe/8frame-0.9.0.min.js"></script>
+    <script src="//cdn.8thwall.com/web/aframe/aframe-animation-component-5.1.2.min.js"></script>
+    <script src="www/javascript/photo-mode.js"></script>
+    <script src="www/javascript/gesture-detector.js"></script>
+    <script src="www/javascript/hold-drag.js"></script>
+    <script src="www/javascript/pinch-scale.js"></script>
+    <script src="www/javascript/two-finger-spin.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+    
+    <!-- iphone XR用 -->
+    <script defer src="//cdn.8thwall.com/web/aframe/aframe-animation-component-5.1.2.min.js"></script>
+    <script defer src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
+    
+    <!-- 8thWall apiキー -->
+    <script async src="//apps.8thwall.com/xrweb?appKey=oRThdUs7YmrgYMWVdAzpCCkvCMjdx3uGvWD3tMjvu6DinPXdDPo0DlbICElkNo1Vad29FN"></script>
+
+<script>
+      //タップでモデルのインポート（placeground参照）
+      AFRAME.registerComponent('tap-place', {
+        init: function() {
+          const ground = document.getElementById('ground')
+          ground.addEventListener('click', event => {
+            
+            //新しく実態の作成
+            const newElement = document.createElement('a-entity')
+            const touchPoint = event.detail.intersection.point
+            
+            // 属性の付与
+            newElement.setAttribute('position', touchPoint)
+            newElement.setAttribute('visible', 'false')
+            newElement.setAttribute('scale', '1 1 1')
+            newElement.setAttribute('gltf-model', '#Model')
+            
+            this.el.sceneEl.appendChild(newElement)
+            
+            //アニメーションさせて配置
+            newElement.addEventListener('model-loaded', () => {
+              // Once the model is loaded, we are ready to show it popping in using an animation
+              newElement.setAttribute('visible', 'true')
+              newElement.setAttribute('animation', {
+                property: 'scale',
+                to: '0.7 0.7 0.7',
+                easing: 'easeOutElastic',
+                dur: 800,
+              })
+            })
+          })
+        }
+      })
+  /*
+  簡易的に動かす
+  選択→タッチ→追加→配置→撮影→選択
+  のループができる
+  1つ追加したら処理を終了、そのまま配置ができるようにする（操作の追加）
+  最終的にjsファイルでまとめる
+  
+ 
+  //操作可能オブジェクトに変換？
+          aframe.registercomponent('addmodel',{
+            init: function(){
+            const addmodel = document.createElement('a-scene')
+            
+            
+            
+            addmodel.setAttribute('gesture-detector');
+            this.el.sceneEl.appendchild(addElement)
+          })
+         })
+   */
     </script>
-</head>
-<body>
-    <!-- TODO: Please edit here -->
-</body>
+ </head>
+
+  <body>
+    
+    <!-- スクリーンショットボタン -->
+    <div id="photoModeContainer" style="display: none">
+      <img id="photoModeImage">
+      <div id="flash"></div>
+      <div id="shutterButton"></div>
+      <div id="closeButton"></div>
+    </div>
+    
+    <!-- a-scene(シーンの追加)：この中にa-frameの記述 詳細（英語）https://aframe.io/docs/0.9.0/introduction/　　-->
+    
+    <a-scene
+      xrweb
+      gesture-detector
+      xrextras-almost-there
+      xrextras-loading
+      xrextras-runtime-error
+             tap-place
+             photo-mode>
+
+      <!-- a-assets(オブジェクト):srcでモデルの指定をする　-->
+      <a-assets>
+        <a-asset-item id="Model" src="model/hako.glb"></a-asset-item>
+      </a-assets>
+      
+      <a-assets>
+        <a-asset-item id="AddModel" src="model/hako.glb"></a-asset-item>
+      </a-assets>
+      
+      
+      <!-- カメラの位置 -->
+      <a-camera position="0 4 10"></a-camera>
+
+      <a-camera
+        id="camera"
+        position="0 8 8"
+        raycaster="objects: .cantap"
+        cursor="
+          fuse: false;
+          rayOrigin: mouse;">
+      </a-camera>
+
+      <a-entity
+        light="type: directional;
+               intensity: 0.8;"
+        position="1 4.3 2.5">
+      </a-entity>
+
+      <!-- 光源 -->
+      <a-light type="ambient" intensity="1"></a-light>
+      <a-entity gltf-model="#Model" class="cantap" hold-drag two-finger-spin pinch-scale scale="0.8 0.8 0.8"></a-entity>
+
+      <!--地面の定義 -->
+      <a-entity
+        id="ground"
+        class="cantap"
+        geometry="primitive: box"
+        material="color: #ffffff; transparent: true; opacity: 0.0"
+        scale="1000 2 1000"
+        position="0 -1 0">
+      </a-entity>
+    </a-scene>
+  </body>
 </html>

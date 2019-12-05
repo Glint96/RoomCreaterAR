@@ -16,15 +16,21 @@
     //ログイン処理
     ncmb.User.login(username, password)
         .then(function(data){
-          document.getElementById("appNavigator").popPage();
-          ons.notification.alert("ログインしました");
-           // カレントユーザー情報の取得
-          currentUser = ncmb.User.getCurrentUser();
-          //index.htmlのサイドメニューの文字切り替え
-          document.getElementById("login_button").innerHTML = "ログアウト";
-          login_f = true;
-          //サイドメニューのアカウント表示メソッド
-          acount();
+          //メール確認処理
+          // if (currentUser.isMailAddressConfirmed()) {
+            // メールアドレス確認済み
+            document.getElementById("appNavigator").popPage();
+            ons.notification.alert("ログインしました");
+            // カレントユーザー情報の取得
+            currentUser = ncmb.User.getCurrentUser();
+            //index.htmlのサイドメニューの文字切り替え
+            document.getElementById("login_button").innerHTML = "ログアウト";
+            login_f = true;
+            //サイドメニューのアカウント表示メソッド
+            acount();
+            // } else {
+              // alert("メールを確認してください");
+            // }
         })
         .catch(function(err){
           ons.notification.alert('パスワードかユーザー名が間違っています');
